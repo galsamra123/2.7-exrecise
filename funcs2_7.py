@@ -4,9 +4,6 @@ import shutil
 import subprocess
 import pyautogui
 
-logging.basicConfig(filename='funcs.log',level=logging.INFO,
-                    format='%(asctime)s %(name)s - %(levelname)s - %(message)s')
-
 
 QUEUE_LEN = 1
 MAX_PACKET = 1024
@@ -97,6 +94,8 @@ def length_str(msg):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(filename='funcs.log', level=logging.INFO,
+                        format='%(asctime)s %(name)s - %(levelname)s - %(message)s')
 
     # asserts for di_r
     cont_status, cont = di_r(r'C:\Users\USER\PycharmProjects')

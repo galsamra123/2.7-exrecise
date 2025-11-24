@@ -11,7 +11,7 @@ date   - 28/10/25
 
 import socket
 import logging
-from funcs2.7 import di_r, delete, copy, execute, send_screenshot, length_str
+from funcs2_7 import di_r, delete, copy, execute, send_screenshot, length_str
 
 QUEUE_LEN = 1
 IP = '0.0.0.0'
