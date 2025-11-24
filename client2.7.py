@@ -15,14 +15,14 @@ import logging
 import os
 
 MAX_PACKET = 1024
-IP = '192.168.1.218'
+IP = '127.0.0.1'
 PORT = 3037
 my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
 def length_str(msg):
     """
-    Return the length of a string padded with zeros to 6 digits.
+    Return the length of a msg padded with zeros to 6 digits.
 
     :param msg: String to measure.
     :return: Zero-padded length string of 6 characters.
@@ -32,45 +32,45 @@ def length_str(msg):
 
 def protocol_send(sock, confirmation, data):
     """
-    Send a command and its data to the server through the given socket.
+    Send a response message back to the client.
 
-    :param sock: The client socket used to send the message.
-    :param confirmation: The command name (e.g., 'dir', 'delete', etc.).
-    :param data: The payload/data of the command (bytes).
+    :param sock: Client socket to send data to.
+    :param confirmation: Command result (success/fail).
+    :param data: Payload data to send (bytes).
     :return: None
     """
     msg = confirmation.encode() + b',' + data
-    final_length = length_str(msg.decode()).encode()
-    sock.sendall(final_length + b',' + msg)
+    final_length = length_str(msg).encode()
+    final_msg = final_length + b',' + msg
+    sock.sendall(final_msg)
 
 
 def protocol_recive(sock):
     """
-    Receive a server response and return the confirmation and data parts.
+    Receive a message from the client and return (confirmation, data).
 
-    :param sock: The client socket used to receive data.
-    :return: Tuple (confirmation: str, data: bytes)
+    :param sock: Client socket to read from.
+    :return: Tuple of (confirmation: str, data: bytes)
     """
     recive = 0
     recived = b""
-
-    # Read first 7 bytes: 6 digits length + comma
     while recive < 7:
         byts = sock.recv(7 - recive)
+        if byts == b'':
+            raise ConnectionError
         recive += len(byts)
         recived += byts
 
     length_msg = recived.decode()
-    logging.info(length_msg)
-    length_msg = length_msg[:-1]  # remove comma
-    logging.info(length_msg)
+    length_msg = length_msg[:-1]
     length_msg = int(length_msg)
 
     recive = 0
     recived = b""
-
     while recive < length_msg:
         byts = sock.recv(length_msg - recive)
+        if byts == b'':
+            raise ConnectionError
         recive += len(byts)
         recived += byts
 
@@ -86,8 +86,8 @@ try:
     my_socket.connect((IP, PORT))
 
     while True:
-        request = input(
-            'Enter your request (dir / delete / copy / execute / send screenshot / exit): \n'
+        request = input('Enter your request (dir / delete / copy / execute /'
+                        ' send screenshot / exit): \n'
         ).strip().lower()
 
         if request == 'dir':
@@ -97,7 +97,8 @@ try:
             print(response)
 
         elif request == 'send screenshot':
-            path = input('Enter a file path to save the screenshot (on THIS computer): \n')
+            path = input('Enter a file path to save the '
+                         'screenshot (on THIS computer): \n')
             protocol_send(my_socket, request, b'')
             response, bytse = protocol_recive(my_socket)
 

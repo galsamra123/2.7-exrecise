@@ -48,6 +48,8 @@ def protocol_recive(sock):
     recived = b""
     while recive < 7:
         byts = sock.recv(7 - recive)
+        if byts == b'':
+            raise ConnectionError
         recive += len(byts)
         recived += byts
 
@@ -59,6 +61,8 @@ def protocol_recive(sock):
     recived = b""
     while recive < length_msg:
         byts = sock.recv(length_msg - recive)
+        if byts == b'':
+            raise ConnectionError
         recive += len(byts)
         recived += byts
 
@@ -94,8 +98,7 @@ def main():
                         data = data.encode()
                         protocol_send(client_socket, confirmation, data)
 
-                    if request == 'send screenshot':
-                        #path = data.decode()
+                    elif request == 'send screenshot':
                         confirmation, data = send_screenshot()
                         protocol_send(client_socket, confirmation, data)
 
@@ -139,7 +142,5 @@ def main():
 if __name__ == "__main__":
     logging.basicConfig(filename='funcs.log', level=logging.INFO,
                         format='%(asctime)s %(name)s - %(levelname)s - %(message)s')
-
-    logging.info('All asserts passed')
     logging.info('Server up and running')
     main()

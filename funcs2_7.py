@@ -2,6 +2,8 @@ import os
 import logging
 import shutil
 import subprocess
+
+
 import pyautogui
 
 
@@ -24,6 +26,7 @@ NOT_EXIST_EXECUTE = 'app path not found'
 PICTURE = 'picture'
 NOT_COMMAND = 'not a command'
 
+
 def di_r(dir_path):
     logging.info('path = ' + dir_path)
     try:
@@ -42,10 +45,10 @@ def delete(delete_path):
     try:
         file_path = delete_path.strip('"')
         os.remove(file_path)
-        return SUCCESS,DELETED
+        return SUCCESS, DELETED
     except FileNotFoundError:
         logging.error('File not exist')
-        return FAILURE,NOT_EXIST_FILE
+        return FAILURE, NOT_EXIST_FILE
 
 
 def copy(from_path, to_path):
@@ -55,25 +58,25 @@ def copy(from_path, to_path):
         from_path = from_path.strip('"')
         to_path = to_path.strip('"')
         shutil.copy2(from_path, to_path)
-        return SUCCESS,COPIED
+        return SUCCESS, COPIED
     except FileNotFoundError:
         if not os.path.exists(from_path):
             logging.error('Source path not found')
-            return FAILURE,PATH_FAILURE
+            return FAILURE, PATH_FAILURE
         if not os.path.exists(to_path):
             logging.error('Destination not found')
-            return FAILURE,DESTINATION_COPY
-        return FAILURE,FAILURE
+            return FAILURE, DESTINATION_COPY
+        return FAILURE, FAILURE
 
 
 def execute(execute_path):
     try:
         execute_path = execute_path.strip('"')
         subprocess.call(execute_path)
-        return SUCCESS,EXECUTED
+        return SUCCESS, EXECUTED
     except FileNotFoundError:
         logging.error('Execute path not exist')
-        return FAILURE,NOT_EXIST_EXECUTE
+        return FAILURE, NOT_EXIST_EXECUTE
 
 
 def take_screenshot():
@@ -102,11 +105,10 @@ if __name__ == "__main__":
     # assert ('PythonProject' in cont)   # you can uncomment and adapt if you want
 
     returned = di_r('nope')
-    # di_r now returns (status, message)
     assert returned == (FAILURE, NOT_EXIST_DIR)
 
     # assert for copy
-    copy_status, copy_msg = copy(r"C:\Users\USER\Downloads\cyphen1.py",r"C:\Users\USER\PycharmProjects\PythonProject")
+    copy_status, copy_msg = copy(r"C:\Users\USER\Downloads\cyphen1.py", r"C:\Users\USER\PycharmProjects\PythonProject")
     assert copy_status == SUCCESS
 
     # asserts for take_screenshot
@@ -130,7 +132,5 @@ if __name__ == "__main__":
 
     del_status2, del_msg2 = delete(" fake ")
     assert del_status2 == FAILURE
-
-
 
     print('asserts passed')
